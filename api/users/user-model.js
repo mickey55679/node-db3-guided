@@ -14,7 +14,6 @@ async function findPosts(user_id) {
   .select('p.id as post_id', 'contents', 'username')
   .join('users as u', 'p.user_id', '=', 'u.id')
   .where('u.id', user_id)
-  console.log(rows)
   return rows
   /*
     Implement so it resolves this structure:
@@ -36,10 +35,25 @@ on p.user_id = u.id
   */
 }
 
-function find() {
-  return db('users')
+async function find() {
+  const rows = await db('users as u')
+  .leftJoin('posts as p', 'u.id', '=', 'p.user_id')
+  .count('p.id as post_count')
+  .groupBy('u.id')
+  .select('u.id as user_id', 'username' )
+  return rows
+
   /*
     Improve so it resolves this structure:
+    select 
+u.id as user_id, 
+username, 
+count(p.id) as post_count
+
+from users as u 
+left join posts as p 
+on u.id = p.user_id
+group by u.id 
 
     [
         {
